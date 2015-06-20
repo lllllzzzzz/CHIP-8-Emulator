@@ -8,17 +8,21 @@
 #include "chip8.hpp"
 
 #define DEBUG
-#define WIN_WIDTH	64
-#define WIN_HEIGHT	32
-#define timerMs(x)	((x*1000) / timerFreq)
+#define WINDOW_WIDTH	64
+#define WINDOW_HEIGHT	32
+#define WINDOW_X	100
+#define WINDOW_Y	100
+#define BG_COLOUR	0x00000000
+#define FG_COLOUR	0xFFFFFFFF
+#define timerMs(x)	((x * 1000) / timerFreq)
 
 // Globals
 Chip8 			g_Chip8;
 bool 			isPaused = false;
-unsigned int 	cyclesPerSecond = 600;
-unsigned int 	screenWidth = 640;
-unsigned int 	screenHeight = 320;
-unsigned char 	videoBuffer[WIN_HEIGHT][WIN_WIDTH][3];
+const unsigned int 	cyclesPerSecond = 600;
+const unsigned int 	screenWidth = 640;
+const unsigned int 	screenHeight = 320;
+unsigned char 		videoBuffer[WINDOW_HEIGHT][WINDOW_WIDTH][3];
 
 // GLUT callbacks
 void setupTexture();
@@ -44,24 +48,24 @@ int main(int argc, char *argv[])
         isFullScreen = true;
     }
 
-    if(!g_Chip8.Initialize()) {
+    if (!g_Chip8.Initialize()) {
         std::cerr << "Error initializing emulator!\n";
         return EXIT_FAILURE;
     }
 
-    if(!g_Chip8.LoadRom(argv[1])) {
+    if (!g_Chip8.LoadRom(argv[1])) {
         std::cerr << "Error loading rom!\n";
         return EXIT_FAILURE;
     }
 
-    int glut_argc = 2;
+    const int glut_argc = 2;
     const char *glut_argv[] = {"foo", "bar"};
     glutInit(&glut_argc, const_cast<char**>
     	(reinterpret_cast<const char**>(glut_argv)));
 
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowSize(screenWidth, screenHeight);
-    glutInitWindowPosition(100, 100);
+    glutInitWindowPosition(WINDOW_X, WINDOW_Y);
     glutCreateWindow(argv[1]);
 
     if (isFullScreen) {
@@ -88,15 +92,15 @@ int main(int argc, char *argv[])
 
 void setupTexture()
 {
-    for(int y = 0; y < WIN_HEIGHT; y++) {
-        for(int x = 0; x < WIN_WIDTH; x++) {
+    for(int y = 0; y < WINDOW_HEIGHT; y++) {
+        for(int x = 0; x < WINDOW_WIDTH; x++) {
             videoBuffer[y][x][0] = 0;
             videoBuffer[y][x][1] = 0;
             videoBuffer[y][x][2] = 0;
         }
     }
 
-    glTexImage2D(GL_TEXTURE_2D, 0, 3, WIN_WIDTH, WIN_HEIGHT, 
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, WINDOW_WIDTH, WINDOW_HEIGHT, 
                  0, GL_RGB, GL_UNSIGNED_BYTE, 
                  reinterpret_cast<GLvoid*>(videoBuffer));
 
@@ -115,21 +119,21 @@ void updateTexture()
         return;
     }
 
-    for(int y = 0; y < WIN_HEIGHT; y++) {
-        for(int x = 0; x < WIN_WIDTH; x++) {
-            if(gfx[(y * WIN_WIDTH) + x] == 0) {
-                videoBuffer[y][x][0] = 0;
-                videoBuffer[y][x][1] = 0;
-                videoBuffer[y][x][2] = 0;
+    for (int y = 0; y < WINDOW_HEIGHT; y++) {
+        for (int x = 0; x < WINDOW_WIDTH; x++) {
+            if (gfx[(y * WINDOW_WIDTH) + x] == 0) {
+                videoBuffer[y][x][0] = BG_COLOUR;
+                videoBuffer[y][x][1] = BG_COLOUR;
+                videoBuffer[y][x][2] = BG_COLOUR;
             } else {
-                videoBuffer[y][x][0] = 255;
-                videoBuffer[y][x][1] = 255;
-                videoBuffer[y][x][2] = 255;
+                videoBuffer[y][x][0] = FG_COLOUR;
+                videoBuffer[y][x][1] = FG_COLOUR;
+                videoBuffer[y][x][2] = FG_COLOUR;
             }
         }
     }
 
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, WIN_WIDTH, WIN_HEIGHT, 
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 
                     GL_RGB, GL_UNSIGNED_BYTE, 
                     reinterpret_cast<GLvoid*>(videoBuffer));
 
@@ -158,7 +162,7 @@ void renderFrame()
     g_Chip8.TickSoundTimer();
 
     // If draw flag is set, update screen
-    if(g_Chip8.GetFlag(CPU_FLAG_DRAW)) {
+    if (g_Chip8.GetFlag(CPU_FLAG_DRAW)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         updateTexture();
         glutSwapBuffers();
@@ -258,7 +262,7 @@ void keyboardUp(unsigned char key, int x, int y)
     memset (keyState, 0, 16);
     // Read keypad input
     for (int i = 0; i < 16; i++) {
-        if(key == keyList[i]) {
+        if (key == keyList[i]) {
             g_Chip8.ResetFlag(CPU_FLAG_KEYDOWN);
             keyState[i] = 0;
             break;
