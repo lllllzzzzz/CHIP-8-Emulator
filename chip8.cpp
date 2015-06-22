@@ -162,13 +162,12 @@ void Chip8::Step()
   |-------------------------------------------------------|*/
 bool Chip8::Initialize()
 {
-    _regs.pc = 0x200;
-    _regs.sp = 0;
-    _regs.opcode = 0;
-    _regs.I = 0;
-
-    _regs.delayTimer = 0;
-    _regs.soundTimer = 0;
+    _regs.pc 		= 0x0200;
+    _regs.sp 		= 0x0;
+    _regs.opcode 	= 0x0000;
+    _regs.I 		= 0x0000;
+    _regs.delayTimer 	= 0;
+    _regs.soundTimer 	= 0;
 
     memset(_RAM, 0, 4096);
     memset(_VRAM, 0, 2048);
@@ -180,7 +179,7 @@ bool Chip8::Initialize()
     _flags = CPU_FLAG_DETECTCOLLISION | CPU_FLAG_HWRAP | CPU_FLAG_VWRAP;
 
     srand(time(NULL));
-
+    
     return true;
 }
 
@@ -194,13 +193,12 @@ bool Chip8::Initialize()
   |-------------------------------------------------------|*/
 bool Chip8::Reset()
 {
-    _regs.pc = 0x200;
-    _regs.sp = 0;
-    _regs.opcode = 0;
-    _regs.I = 0;
-
-    _regs.delayTimer = 0;
-    _regs.soundTimer = 0;
+    _regs.pc 		= 0x0200;
+    _regs.sp 		= 0x0;
+    _regs.opcode 	= 0x0000;
+    _regs.I 		= 0x0000;
+    _regs.delayTimer 	= 0;
+    _regs.soundTimer 	= 0;
 
     memset(_VRAM, 0, 2048);
     memset(_regs.V, 0, 16);
@@ -236,7 +234,6 @@ bool Chip8::LoadRom(const char *filename)
     }
 
     bytesRead = fread(_RAM + 0x200, sizeof(char), romSize, pFile);
-
     if (bytesRead != romSize) {
         return false;
     }
@@ -313,14 +310,12 @@ void Chip8::LoadState()
 void Chip8::DumpRegisters()
 {
     std::cout << "Dump:" << std::endl;
-
     printf("PC = %04X    ", _regs.pc);
     printf("SP = %04X    ", _regs.sp);
     printf("OP = %04X    ", _regs.opcode);
     printf("I  = %04X    ", _regs.I);
     printf("DT = %04X    ", _regs.delayTimer);
     printf("ST = %04X\n",   _regs.soundTimer);
-
     printf("V0 = %04X    ", _regs.V[0x0]);
     printf("V1 = %04X    ", _regs.V[0x1]);
     printf("V2 = %04X    ", _regs.V[0x2]);
@@ -337,7 +332,6 @@ void Chip8::DumpRegisters()
     printf("VD = %04X    ", _regs.V[0xD]);
     printf("VE = %04X    ", _regs.V[0xE]);
     printf("VF = %04X\n",   _regs.V[0xF]);
-
     printf("\n");
 
     // std::cout << std::hex;
