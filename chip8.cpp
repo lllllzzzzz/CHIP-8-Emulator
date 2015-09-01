@@ -806,16 +806,17 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
         break;
 
         /*|=======================================================|
-          |  CXNN: Set Vx to a random int (0-2550 AND NN.         |
+          |  CXNN: Set Vx to a random int (0-255) AND NN.         |
           |                                                       |
           |  Generate a random int between 0 and 255, logical     |
-          |  AND this value by NN and store the result in Vx.     |
+          |  AND this value with NN and store the result in Vx.   |
           |  Using rand() for RNG, seeded with value of           |
           |  RTC (time(NULL)).                                    |
           |-------------------------------------------------------|*/
         case 0xC000:
         {
-            Vx = (rand() % 255) & NN;
+            const int RAND_UPPER_BOUND = 255;
+            Vx = (rand() % RAND_UPPER_BOUND) & NN;
             _regs.pc += 2;
         }
         break;
@@ -842,13 +843,17 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
           |-------------------------------------------------------|*/
         case 0xD000:
         {
+            // const int PIXELS_X = 64;
+            // const int PIXELS_Y = 32;
+            const int DEFAULT_HEIGHT = 16;
+            
             byte x      = Vx;
             byte y      = Vy;
             byte height = N;
             byte row    = 0;
 
-            if(height == 0) {
-                height = 16;
+            if (height == 0) {
+                height = DEFAULT_HEIGHT;
             }
 
             // Set carry flag to 0
