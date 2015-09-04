@@ -17,14 +17,14 @@ namespace {
     const unsigned int WINDOW_HEIGHT   = 32;
     const unsigned int WINDOW_X        = 100;
     const unsigned int WINDOW_Y	       = 100;
-    const unsigned int screenWidth     = 640;
-    const unsigned int screenHeight    = 320;
+    int                screenWidth     = 640;
+    int                screenHeight    = 320;
     const unsigned int BG_COLOUR       = 0x00000000;
     const unsigned int FG_COLOUR       = 0xFFFFFFFF;
-    const unsigned int cyclesPerSecond = 600;
-    Chip8 		   g_Chip8;
-    bool  		   isPaused    = false;
-    unsigned char 	   videoBuffer[WINDOW_HEIGHT][WINDOW_WIDTH][3];
+    int                cyclesPerSecond = 600;
+    Chip8 	       g_Chip8;
+    bool  	       isPaused        = false;
+    unsigned char      videoBuffer[WINDOW_HEIGHT][WINDOW_WIDTH][3];
 }
 
 // GLUT callbacks
