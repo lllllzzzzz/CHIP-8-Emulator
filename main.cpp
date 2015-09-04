@@ -7,22 +7,23 @@
 // #include <SFML/Audio.hpp>
 #include "chip8.hpp"
 
+// Macros
 #define DEBUG
-#define WINDOW_WIDTH	64
-#define WINDOW_HEIGHT	32
-#define WINDOW_X	100
-#define WINDOW_Y	100
-#define BG_COLOUR	0x00000000
-#define FG_COLOUR	0xFFFFFFFF
 #define timerMs(x)	((x * 1000) / timerFreq)
 
 // Globals
-Chip8 			g_Chip8;
-bool 			isPaused = false;
-const unsigned int 	cyclesPerSecond = 600;
-const unsigned int 	screenWidth = 640;
-const unsigned int 	screenHeight = 320;
-unsigned char 		videoBuffer[WINDOW_HEIGHT][WINDOW_WIDTH][3];
+const unsigned int WINDOW_WIDTH    = 64;
+const unsigned int WINDOW_HEIGHT   = 32;
+const unsigned int WINDOW_X        = 100;
+const unsigned int WINDOW_Y	   = 100;
+const unsigned int screenWidth     = 640;
+const unsigned int screenHeight    = 320;
+const unsigned int BG_COLOUR	   = 0x00000000;
+const unsigned int FG_COLOUR	   = 0xFFFFFFFF;
+const unsigned int cyclesPerSecond = 600;
+Chip8 		   g_Chip8;
+bool  		   isPaused        = false;
+unsigned char 	   videoBuffer[WINDOW_HEIGHT][WINDOW_WIDTH][3];
 
 // GLUT callbacks
 void setupTexture();
