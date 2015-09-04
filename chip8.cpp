@@ -224,7 +224,6 @@ bool Chip8::LoadRom(const char *filename)
         return false;
     }
 
-    int bytesRead;
     fseek(pFile, 0, SEEK_END);
     int romSize = ftell(pFile);
     rewind(pFile);
@@ -233,7 +232,7 @@ bool Chip8::LoadRom(const char *filename)
         return false;
     }
 
-    bytesRead = fread(_RAM + 0x200, sizeof(char), romSize, pFile);
+    int bytesRead = fread(_RAM + 0x200, sizeof(char), romSize, pFile);
     if (bytesRead != romSize) {
         return false;
     }
