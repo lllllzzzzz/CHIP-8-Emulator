@@ -6,7 +6,7 @@
 #include <time.h>
 #include "chip8.hpp"
 
-#define fetch(addr)     ((_RAM[addr] << 8) | _RAM[addr + 1])
+#define fetch(addr)     ((_RAM[addr] << 8) | (_RAM[addr + 1]))
 #define X               ((_regs.opcode & 0x0F00) >> 8)
 #define Y               ((_regs.opcode & 0x00F0) >> 4)
 #define N               (_regs.opcode & 0x000F)
@@ -133,7 +133,7 @@ void Chip8::TickDelayTimer()
 void Chip8::TickSoundTimer()
 {
     if (_regs.soundTimer > 0) {
-        if(_regs.soundTimer == 1) {
+        if (_regs.soundTimer == 1) {
 //            PlayBeep();
         }
         _regs.soundTimer--;
@@ -162,12 +162,12 @@ void Chip8::Step()
   |-------------------------------------------------------|*/
 bool Chip8::Initialize()
 {
-    _regs.pc 		= 0x0200;
-    _regs.sp 		= 0x0;
-    _regs.opcode 	= 0x0000;
-    _regs.I 		= 0x0000;
-    _regs.delayTimer 	= 0;
-    _regs.soundTimer 	= 0;
+    _regs.pc         = 0x0200;
+    _regs.sp         = 0x0;
+    _regs.opcode     = 0x0000;
+    _regs.I          = 0x0000;
+    _regs.delayTimer = 0;
+    _regs.soundTimer = 0;
 
     memset(_RAM, 0, 4096);
     memset(_VRAM, 0, 2048);
@@ -193,12 +193,12 @@ bool Chip8::Initialize()
   |-------------------------------------------------------|*/
 bool Chip8::Reset()
 {
-    _regs.pc 		= 0x0200;
-    _regs.sp 		= 0x0;
-    _regs.opcode 	= 0x0000;
-    _regs.I 		= 0x0000;
-    _regs.delayTimer 	= 0;
-    _regs.soundTimer 	= 0;
+    _regs.pc            = 0x0200;
+    _regs.sp            = 0x0;
+    _regs.opcode        = 0x0000;
+    _regs.I             = 0x0000;
+    _regs.delayTimer    = 0;
+    _regs.soundTimer    = 0;
 
     memset(_VRAM, 0, 2048);
     memset(_regs.V, 0, 16);
@@ -233,13 +233,12 @@ bool Chip8::LoadRom(const char *filename)
     }
 
     int bytesRead = fread(_RAM + 0x200, sizeof(char), romSize, pFile);
+    fclose(pFile);
     if (bytesRead != romSize) {
         return false;
     }
 
     std::cout << "Loaded " << romSize << "KB ROM '" << filename << "'\n";
-
-    fclose(pFile);
     return true;
 
     // std::ifstream rom;
@@ -367,9 +366,9 @@ void Chip8::DumpRegisters()
 
 void Chip8::ExecuteOpcode(const unsigned short opcode)
 {
-    switch(opcode & 0xF000) {
+    switch (opcode & 0xF000) {
         case 0x0000:
-            switch(_regs.opcode & 0x00F0) {
+            switch (_regs.opcode & 0x00F0) {
                 /*|=======================================================|
                   |  00CN: Scroll screen N lines down.              SCHIP |
                   |                                                       |
@@ -378,8 +377,8 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
                   |-------------------------------------------------------|*/
                 case 0x00C0:
                 {
-                    for(int y = 0; y < (64 - N); y++) {
-                        for(int x = 0; x < 128; x++) {
+                    for (int y = 0; y < (64 - N); y++) {
+                        for (int x = 0; x < 128; x++) {
                             _VRAM[((y + N) * 64) + x] = _RAM[(y * 64) + x];
                             _VRAM[(y * 64) + x] = 0;
                         }
@@ -390,10 +389,10 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
                  break;
             }
 
-            switch(_regs.opcode & 0x00FF) {
+            switch (_regs.opcode & 0x00FF) {
                 case 0x00EE:
                 {
-                    if(!_regs.sp) {
+                    if (!_regs.sp) {
                         #ifdef DEBUG
                         std::cerr << std::hex << pc
                                   << ": Stack empty, cannot return from "
@@ -428,8 +427,8 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
                   |-------------------------------------------------------|*/
                  case 0x00FB:
                  {
-                     for(int y = 0; y < 64; y++) {
-                         for(int x = 0; x < (128 - 4); x++) {
+                     for (int y = 0; y < 64; y++) {
+                         for (int x = 0; x < (128 - 4); x++) {
                              _VRAM[(y * 64) + x + 4] = _RAM[(y * 64) + x];
                              _VRAM[(y * 64) + x] = 0;
                          }
@@ -447,8 +446,8 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
                   |-------------------------------------------------------|*/
                  case 0x00FC:
                  {
-                     for(int y = 0; y < 64; y++) {
-                         for(int x = 4; x < 128; x++) {
+                     for (int y = 0; y < 64; y++) {
+                         for (int x = 4; x < 128; x++) {
                              _VRAM[(y * 64) + x - 4] = _RAM[(y * 64) + x];
                              _VRAM[(y * 64) + x] = 0;
                          }
@@ -508,17 +507,17 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
           |  Program counter is set to address NNN.               |
           |-------------------------------------------------------|*/
         case 0x1000:
-            if(NNN < 0x0200 || NNN > 0x0FFD) {
+            if (NNN < 0x0200 || NNN > 0x0FFD) {
                 #ifdef DEBUG
                 printf("0x%04X: Illegal jump, resetting rom...\n", pc);
                 #endif // DEBUG
                 Reset();
-            } else if(_flags & CPU_FLAG_DETECTGAMEOVER && _regs.pc == NNN) {
+            } else if (_flags & CPU_FLAG_DETECTGAMEOVER && _regs.pc == NNN) {
                 #ifdef DEBUG
                 printf("0x%04X: Game over detected, resetting rom...\n", pc);
                 #endif // DEBUG
                 Reset();
-            } else if(NNN < 0x0200 || NNN > 0x0FFD) {
+            } else if (NNN < 0x0200 || NNN > 0x0FFD) {
                 #ifdef DEBUG
                 printf("0x%04X: Illegal jump, resetting rom...\n", pc);
                 #endif // DEBUG
@@ -541,7 +540,7 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
           |-------------------------------------------------------|*/
         case 0x2000:
         {
-            if(NNN < 0x0200 || NNN > 0x0FFD) {
+            if (NNN < 0x0200 || NNN > 0x0FFD) {
                 #ifdef DEBUG
                 std::cerr << std::hex << pc
                           << ": Illegal call, address out of memory range! "
@@ -550,7 +549,7 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
                 Reset();
             }
 
-            if(_regs.sp == 32) {
+            if (_regs.sp == 32) {
                 #ifdef DEBUG
                 std::cerr << std::hex << pc
                           << ": Stack full, cannot push memory address! "
@@ -629,7 +628,7 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
         break;
 
         case 0x8000:
-            switch(_regs.opcode & 0x000F)
+            switch (_regs.opcode & 0x000F)
             {
                 /*|=======================================================|
                   |  8XY0: Assign Vy to Vx.                               |
@@ -791,7 +790,7 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
           |-------------------------------------------------------|*/
         case 0xB000:
         {
-            if(NNN + _regs.V[0x0] < 0x0200 || NNN + _regs.V[0x0] > 0x0FFD) {
+            if (NNN + _regs.V[0x0] < 0x0200 || NNN + _regs.V[0x0] > 0x0FFD) {
                 #ifdef DEBUG
                 std::cerr << std::hex << pc
                           << ": Illegal jump, address out of memory range! "
@@ -858,17 +857,17 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
             // Set carry flag to 0
             Vf = 0;
 
-            if(!(_flags & CPU_FLAG_SCHIP)) {
-                for(int yline = 0; yline < height; yline++) {
+            if (!(_flags & CPU_FLAG_SCHIP)) {
+                for (int yline = 0; yline < height; yline++) {
                     // Sprite stored at address I
                     row = _RAM[_regs.I + yline];
-                    for(int xline = 0; xline < 8; xline++) {
+                    for (int xline = 0; xline < 8; xline++) {
                         // Shift pixels to draw row
-                        if((row & (0x80 >> xline)) != 0) {
+                        if ((row & (0x80 >> xline)) != 0) {
                             // If collision detection flag is set, 
                             // check for collision
-                            if(_flags & CPU_FLAG_DETECTCOLLISION) {
-                                if(_VRAM[((yline + y) * 64) + xline + x] == 1) {
+                            if (_flags & CPU_FLAG_DETECTCOLLISION) {
+                                if (_VRAM[((yline + y) * 64) + xline + x] == 1) {
                                     Vf = 1;
                                 }
                             }
@@ -881,16 +880,16 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
             }
 
             else {
-                for(int yline = 0; yline < height; yline++) {
+                for (int yline = 0; yline < height; yline++) {
                     // Sprite stored at address I
                     row = _RAM[_regs.I + yline];
-                    for(int xline = 0; xline < 8; xline++) {
+                    for (int xline = 0; xline < 8; xline++) {
                         // Shift pixels to draw row
-                        if((row & (0x80 >> xline)) != 0) {
+                        if ((row & (0x80 >> xline)) != 0) {
                             // If collision detection flag is set, 
                             // check for collision
-                            if(_flags & CPU_FLAG_DETECTCOLLISION) {
-                                if(_VRAM[((yline + y) * 64) + xline + x] == 1) {
+                            if (_flags & CPU_FLAG_DETECTCOLLISION) {
+                                if (_VRAM[((yline + y) * 64) + xline + x] == 1) {
                                     Vf = 1;
                                 }
                             }
@@ -907,9 +906,9 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
 //
 //                    unsigned char *ptr = &_RAM[_regs.I];
 //
-//                    for(int yline = 0; yline < height; yline++)
+//                    for (int yline = 0; yline < height; yline++)
 //                    {
-//                        if(width == 8)
+//                        if (width == 8)
 //                        {
 //                            pixel = *ptr;
 //                            ptr++;
@@ -920,15 +919,15 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
 //                            ptr += 2;
 //                        }
 //
-//                        for(int xline = 0; xline < width; xline++)
+//                        for (int xline = 0; xline < width; xline++)
 //                        {
-//                            if(pixel & (mask >> xline) != 0)
+//                            if (pixel & (mask >> xline) != 0)
 //                            {
 //                                // If collision detection flag is set,
 //                                // check for collision
-//                                if(_flags & CPU_FLAG_DETECTCOLLISION)
+//                                if (_flags & CPU_FLAG_DETECTCOLLISION)
 //                                {
-//                                    if(_VRAM[((yline + y) * 64) + xline + x] == 1)
+//                                    if (_VRAM[((yline + y) * 64) + xline + x] == 1)
 //                                    {
 //                                        Vf = 1;
 //                                    }
@@ -947,7 +946,7 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
         break;
 
         case 0xE000:
-            switch(_regs.opcode & 0x00FF)
+            switch (_regs.opcode & 0x00FF)
             {
                 /*|=======================================================|
                   |  EX9E: Skip the next instruction if key in Vx is      |
@@ -980,7 +979,7 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
         break;
 
         case 0xF000:
-            switch(_regs.opcode & 0x00FF)
+            switch (_regs.opcode & 0x00FF)
             {
                 /*|=======================================================|
                   |  FX07: Set Vx to the value of the delay timer.        |
@@ -1016,18 +1015,18 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
                         }
                     }
 
-                    if(!keyPress) {
+                    if (!keyPress) {
                         return;
                     }
 
                     _regs.pc += 2;
 
 //                        // Check if key is down
-//                        if(_flags & ~CPU_FLAG_KEYDOWN)
+//                        if (_flags & ~CPU_FLAG_KEYDOWN)
 //                        {
-//                            for(int i = 0; i < 16; i++)
+//                            for (int i = 0; i < 16; i++)
 //                            {
-//                                if(_keyState[i] == 1)
+//                                if (_keyState[i] == 1)
 //                                {
 //                                    Vx = i;
 //                                    _flags |= CPU_FLAG_KEYDOWN;
@@ -1038,9 +1037,9 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
 //                        }
 //
 //                        // Check if key is up
-//                        else if(_flags & CPU_FLAG_KEYDOWN)
+//                        else if (_flags & CPU_FLAG_KEYDOWN)
 //                        {
-//                            if(_keyState[Vx] == 0)
+//                            if (_keyState[Vx] == 0)
 //                            {
 //                                _flags & ~CPU_FLAG_KEYDOWN;
 //                                _regs.pc += 2;
@@ -1101,7 +1100,7 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
                   |-------------------------------------------------------|*/
                 case 0x0029:
                 {
-                    if((Vx * 0x5) < 0x0200 || (Vx * 0x5) > 0x0FFB) {
+                    if ((Vx * 0x5) < 0x0200 || (Vx * 0x5) > 0x0FFB) {
                         #ifdef DEBUG
                         std::cerr << std::hex << pc
                                   << ": Illegal opcode, " << Vx * 0x5 << 
@@ -1129,7 +1128,7 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
                   |-------------------------------------------------------|*/
                 case 0x0030:
                 {
-                    if((Vx * 0x5) < 0x0200 || (Vx * 0x5) > 0x0FF6) {
+                    if ((Vx * 0x5) < 0x0200 || (Vx * 0x5) > 0x0FF6) {
                         #ifdef DEBUG
                             std::cerr << std::hex << pc
                                   << ": Illegal opcode, " << Vx * 0x5 << 
@@ -1178,7 +1177,7 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
                   |-------------------------------------------------------|*/
                 case 0x0055:
                 {
-                    if(_regs.I < 0x0200 || _regs.I > (0x0FFF - X)) {
+                    if (_regs.I < 0x0200 || _regs.I > (0x0FFF - X)) {
                         #ifdef DEBUG
                         std::cerr << std::hex << pc
                                   << ": Illegal opcode, " << Vx * 0x5 << 
@@ -1187,7 +1186,7 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
                         #endif // DEBUG
                         Reset();
                     } else {
-                        for(int i = 0; i <= X; i++) {
+                        for (int i = 0; i <= X; i++) {
                             _RAM[_regs.I + i] = _regs.V[i];
                         }
                     }
@@ -1214,7 +1213,7 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
                   |-------------------------------------------------------|*/
                 case 0x0065:
                 {
-                    if(_regs.I > (0x0FFF - X)) {
+                    if (_regs.I > (0x0FFF - X)) {
                         #ifdef DEBUG
                         std::cerr << std::hex << pc
                                   << ": Illegal ld, address " << _regs.pc << 
@@ -1223,7 +1222,7 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
                         #endif // DEBUG
                         Reset();
                     } else {
-                        for(int i = 0; i <= X; i++) {
+                        for (int i = 0; i <= X; i++) {
                             _regs.V[i] = _RAM[_regs.I + i];
                         }
                     }
@@ -1243,7 +1242,7 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
                 case 0x0075:
                 {
                     #ifdef DEBUG
-                    if(X > 7) {
+                    if (X > 7) {
                         std::cerr << std::hex << pc
                                   << ": Illegal store, cannot" << Vx * 0x5 << 
                                   << " access more than 8 RPL flags! "
@@ -1252,7 +1251,7 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
                     }
                     #endif
 
-                    for(int i = 0; i <= X; i++) {
+                    for (int i = 0; i <= X; i++) {
                         _regs.R[i] = _regs.V[i];
                     }
 
@@ -1270,7 +1269,7 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
                 case 0x0085:
                 {
                     #ifdef DEBUG
-                    if(X > 7) {
+                    if (X > 7) {
                         std::cerr << std::hex << pc
                                   << ": Illegal store, cannot" << Vx * 0x5 << 
                                   << " access more than 8 RPL flags! "
@@ -1279,7 +1278,7 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
                     }
                     #endif
 
-                    for(int i = 0; i <= X; i++) {
+                    for (int i = 0; i <= X; i++) {
                         _regs.V[i] = _regs.R[i];
                     }
 
@@ -1311,11 +1310,11 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
   |-------------------------------------------------------|*/
 void Chip8::EmulateCycles(const unsigned int nCycles)
 {
-    if(_flags & CPU_FLAG_PAUSED) {
+    if (_flags & CPU_FLAG_PAUSED) {
         return;
     }
 
-    for(int i = nCycles; i > 0; i--) {
+    for (int i = nCycles; i > 0; i--) {
         _regs.opcode = fetch(_regs.pc);
         ExecuteOpcode(_regs.opcode);
     }
