@@ -125,9 +125,7 @@ void Chip8::SetKeys(const char keyState[16])
 
 void Chip8::TickDelayTimer()
 {
-    if (_regs.delayTimer > 0) {
-        _regs.delayTimer--;
-    }
+    _regs.delayTimer -= (_regs.delayTimer > 0);
 }
 
 void Chip8::TickSoundTimer()
@@ -219,6 +217,13 @@ bool Chip8::Reset()
   |-------------------------------------------------------|*/
 bool Chip8::LoadRom(const char *filename)
 {
+    const int MAX_ROM_SIZE    = 3584;
+    const int ROM_LOAD_OFFSET = 0x200;
+
+    if (!filename) {
+        return false;
+    }
+
     FILE* pFile = fopen(filename, "rb");
     if (!pFile) {
         return false;
@@ -228,11 +233,12 @@ bool Chip8::LoadRom(const char *filename)
     int romSize = ftell(pFile);
     rewind(pFile);
 
-    if (romSize > 3584) {
+    if (romSize > MAX_ROM_SIZE) {
+        fclose(pFile);
         return false;
     }
 
-    int bytesRead = fread(_RAM + 0x200, sizeof(char), romSize, pFile);
+    int bytesRead = fread(_RAM + ROM_LOAD_OFFSET, sizeof(char), romSize, pFile);
     fclose(pFile);
     if (bytesRead != romSize) {
         return false;
@@ -400,8 +406,7 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
                         #endif // DEBUG
                         Reset();
                      } else {
-                         _regs.sp--;
-                         _regs.pc = _stack[_regs.sp];
+                         _regs.pc = _stack[--_regs.sp];
                          _stack[_regs.sp] = 0;
                      }
                  }
@@ -558,8 +563,7 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
                 Reset();
             }
 
-            _stack[_regs.sp] = _regs.pc + 2;
-            _regs.sp++;
+            _stack[_regs.sp++] = _regs.pc + 2;
             _regs.pc = NNN;
         }
         break;
@@ -1310,7 +1314,7 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
   |-------------------------------------------------------|*/
 void Chip8::EmulateCycles(const unsigned int nCycles)
 {
-    if (_flags & CPU_FLAG_PAUSED) {
+    if (nCycles == 0 || (_flags & CPU_FLAG_PAUSED)) {
         return;
     }
 
