@@ -119,7 +119,6 @@ void Chip8::ToggleFlag(const unsigned int flag)
 
 void Chip8::SetKeys(const char keyState[16])
 {
-    //_keyInput[key] = 0;
     memcpy(_keyState, keyState, 16);
 }
 
@@ -903,44 +902,6 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
                         }
                     }
                 }
-
-//                    unsigned char width = (height == 16) ? 16 : 8;
-//                    unsigned char mask = (height == 16) ? 0x8000 : 0x80;
-//                    unsigned short pixel;
-//
-//                    unsigned char *ptr = &_RAM[_regs.I];
-//
-//                    for (int yline = 0; yline < height; yline++)
-//                    {
-//                        if (width == 8)
-//                        {
-//                            pixel = *ptr;
-//                            ptr++;
-//                        }
-//                        else
-//                        {
-//                            pixel = (*ptr << 8) | *(ptr + 1);
-//                            ptr += 2;
-//                        }
-//
-//                        for (int xline = 0; xline < width; xline++)
-//                        {
-//                            if (pixel & (mask >> xline) != 0)
-//                            {
-//                                // If collision detection flag is set,
-//                                // check for collision
-//                                if (_flags & CPU_FLAG_DETECTCOLLISION)
-//                                {
-//                                    if (_VRAM[((yline + y) * 64) + xline + x] == 1)
-//                                    {
-//                                        Vf = 1;
-//                                    }
-//                                }
-//                                // XOR this byte to set/reset pixel
-//                                _VRAM[((yline + y) * 128) + (xline + x)] ^= 1;
-//                            }
-//                        }
-//                    }
             }
 
             // All pixels plotted, now update screen
