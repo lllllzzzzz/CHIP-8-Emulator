@@ -58,12 +58,12 @@ class Chip8
         byte* GetVRAM           ();
         byte GetDelayTimer      ();
         byte GetSoundTimer      ();
-        unsigned int GetFlags   ();
-        void SetFlags           (const unsigned int flags);
-        bool GetFlag            (const unsigned int flag);
-        void SetFlag            (const unsigned int flag);
-        void ResetFlag          (const unsigned int flag);
-        void ToggleFlag         (const unsigned int flag);
+        unsigned GetFlags       ();
+        void SetFlags           (const unsigned flags);
+        bool GetFlag            (const unsigned flag);
+        void SetFlag            (const unsigned flag);
+        void ResetFlag          (const unsigned flag);
+        void ToggleFlag         (const unsigned flag);
 
         void Step               ();
         void DumpRegisters      ();
@@ -73,7 +73,7 @@ class Chip8
         bool Reset              ();
         bool LoadRom            (const char* filename);
         bool UnloadRom          ();
-        void EmulateCycles      (const unsigned int nCycles);
+        void EmulateCycles      (const unsigned nCycles);
         void ExecuteOpcode      (const word opcode);
         void SaveState          ();
         void LoadState          ();
@@ -82,7 +82,7 @@ class Chip8
 
     private:
         regs _regs;
-        unsigned int _flags;
+        unsigned _flags;
         saveState _saveState;
 
         //byte _RAM[4096];      // 4096 bytes memory
