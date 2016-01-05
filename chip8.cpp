@@ -87,32 +87,32 @@ unsigned char Chip8::GetSoundTimer()
     return _regs.soundTimer;
 }
 
-unsigned int Chip8::GetFlags()
+unsigned Chip8::GetFlags()
 {
     return _flags;
 }
 
-void Chip8::SetFlags(const unsigned int flags)
+void Chip8::SetFlags(const unsigned flags)
 {
     _flags = flags;
 }
 
-bool Chip8::GetFlag(const unsigned int flag)
+bool Chip8::GetFlag(const unsigned flag)
 {
     return _flags & flag;
 }
 
-void Chip8::SetFlag(const unsigned int flag)
+void Chip8::SetFlag(const unsigned flag)
 {
     _flags |= flag;
 }
 
-void Chip8::ResetFlag(const unsigned int flag)
+void Chip8::ResetFlag(const unsigned flag)
 {
     _flags &= ~flag;
 }
 
-void Chip8::ToggleFlag(const unsigned int flag)
+void Chip8::ToggleFlag(const unsigned flag)
 {
     _flags = (_flags & flag) ? _flags & ~flag : _flags | flag;
 }
@@ -1262,18 +1262,17 @@ void Chip8::ExecuteOpcode(const unsigned short opcode)
             getchar();
         break;
     }
-
 }
 
 /*|=======================================================|
-  |  EmulateCycles(const unsigned int nCycles)            |
+  |  EmulateCycles(const unsigned nCycles)            |
   |                                                       |
   |  Execute the number of cycles given by the argument   |
   |  nCycles. Because all CHIP8 instructions take one     |
   |  cycle to execute, effectively this method executes   |
   |  nCycles instructions.                                |
   |-------------------------------------------------------|*/
-void Chip8::EmulateCycles(const unsigned int nCycles)
+void Chip8::EmulateCycles(const unsigned nCycles)
 {
     if (nCycles == 0 || (_flags & CPU_FLAG_PAUSED)) {
         return;
