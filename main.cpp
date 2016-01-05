@@ -14,18 +14,18 @@
 
 // Globals
 namespace {
-    const unsigned int WINDOW_WIDTH    = 64;
-    const unsigned int WINDOW_HEIGHT   = 32;
-    const unsigned int WINDOW_X        = 100;
-    const unsigned int WINDOW_Y        = 100;
-    int                screenWidth     = 640;
-    int                screenHeight    = 320;
-    const unsigned int BG_COLOUR       = 0x00000000;
-    const unsigned int FG_COLOUR       = 0xFFFFFFFF;
-    int                cyclesPerSecond = 600
-    bool               isPaused        = false;
-    unsigned char      videoBuffer[WINDOW_HEIGHT][WINDOW_WIDTH][3];
-    Chip8              g_Chip8;
+    const unsigned WINDOW_WIDTH    = 64;
+    const unsigned WINDOW_HEIGHT   = 32;
+    const unsigned WINDOW_X        = 100;
+    const unsigned WINDOW_Y        = 100;
+    unsigned       screenWidth     = 640;
+    unsigned       screenHeight    = 320;
+    const unsigned BG_COLOUR       = 0x00000000;
+    const unsigned FG_COLOUR       = 0xFFFFFFFF;
+    unsigned       cyclesPerSecond = 600
+    bool           isPaused        = false;
+    unsigned char  videoBuffer[WINDOW_HEIGHT][WINDOW_WIDTH][3];
+    Chip8          g_Chip8;
 }
 
 // GLUT callbacks
