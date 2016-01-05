@@ -7,24 +7,25 @@
 // #include <SFML/Audio.hpp>
 #include "chip8.hpp"
 
-// Macros
+#define MIN_GOOD_ARGS 2
+#define MAX_GOOD_ARGS 3
 #define DEBUG
-#define timerMs(x)	((x * 1000) / timerFreq)
+#define timerMs(x)  ((x * 1000) / timerFreq)
 
 // Globals
 namespace {
     const unsigned int WINDOW_WIDTH    = 64;
     const unsigned int WINDOW_HEIGHT   = 32;
     const unsigned int WINDOW_X        = 100;
-    const unsigned int WINDOW_Y	       = 100;
+    const unsigned int WINDOW_Y        = 100;
     int                screenWidth     = 640;
     int                screenHeight    = 320;
     const unsigned int BG_COLOUR       = 0x00000000;
     const unsigned int FG_COLOUR       = 0xFFFFFFFF;
-    int                cyclesPerSecond = 600;
-    Chip8 	       g_Chip8;
-    bool  	       isPaused        = false;
+    int                cyclesPerSecond = 600
+    bool               isPaused        = false;
     unsigned char      videoBuffer[WINDOW_HEIGHT][WINDOW_WIDTH][3];
+    Chip8              g_Chip8;
 }
 
 // GLUT callbacks
@@ -37,8 +38,7 @@ void keyboardUp(unsigned char key, int x, int y);
 
 int main(int argc, char *argv[])
 {
-    // Read command line args
-    if (argc < 2 || argc > 3) {
+    if (argc < MIN_GOOD_ARGS || argc > MAX_GOOD_ARGS) {
         std::cerr << "CHIP-8 Emulator by Luke Zimmerer\nUsage: " 
                   << argv[0] << " [filename] [-f]\n\n"
                   << "Options:\n"
@@ -46,10 +46,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    bool isFullScreen = false;
-    if (argc == 3 && !strcmp(argv[2], "-f")) {
-        isFullScreen = true;
-    }
+    bool isFullScreen = (argc == MAX_GOOD_ARGS && !strcmp(argv[2], "-f"));
 
     if (!g_Chip8.Initialize()) {
         std::cerr << "Error initializing emulator!\n";
@@ -64,7 +61,7 @@ int main(int argc, char *argv[])
     const int glut_argc = 2;
     const char *glut_argv[] = {"foo", "bar"};
     glutInit(&glut_argc, const_cast<char**>
-    	(reinterpret_cast<const char**>(glut_argv)));
+      (reinterpret_cast<const char**>(glut_argv)));
 
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowSize(screenWidth, screenHeight);
@@ -83,6 +80,7 @@ int main(int argc, char *argv[])
 
     setupTexture();
 
+    // SOUND NOT YET IMPLEMENTED
     // Load sound
     // sf::SoundBuffer buffer;
     // if (!buffer.loadFromFile("beep.wav")) {
@@ -90,13 +88,12 @@ int main(int argc, char *argv[])
     // }
 
     glutMainLoop();
-    // return EXIT_SUCCESS;
 }
 
 void setupTexture()
 {
-    for(int y = 0; y < WINDOW_HEIGHT; y++) {
-        for(int x = 0; x < WINDOW_WIDTH; x++) {
+    for (int y = 0; y < WINDOW_HEIGHT; y++) {
+        for (int x = 0; x < WINDOW_WIDTH; x++) {
             videoBuffer[y][x][0] = 0;
             videoBuffer[y][x][1] = 0;
             videoBuffer[y][x][2] = 0;
@@ -159,12 +156,10 @@ void updateTexture()
 
 void renderFrame()
 {
-    // Execute cycles and tick timers
     g_Chip8.EmulateCycles(cyclesPerSecond / 60);
     g_Chip8.TickDelayTimer();
     g_Chip8.TickSoundTimer();
 
-    // If draw flag is set, update screen
     if (g_Chip8.GetFlag(CPU_FLAG_DRAW)) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         updateTexture();
@@ -188,97 +183,82 @@ void reshapeWindow(GLsizei w, GLsizei h)
 
 void keyboardDown(unsigned char key, int x, int y)
 {
-    if (key == 0x1B) { // ESC key
-        //exit(0);
-        glutLeaveMainLoop(); // ~ key
-    } else if (key == 0x60) {
-        //g_Chip8.Reset();
-        g_Chip8.ToggleFlag(CPU_FLAG_PAUSED);
-    } else if (key == 0x31) { // 1 key
-        g_Chip8.DumpRegisters();
-    } else if (key == 0x35) { // 5 key
-        g_Chip8.Step();
-    }
+  const int NUM_KEYS = 16;
 
-    //printf("%#02X\n", key);
+  if (key == 0x1B) {                        // ESC
+      glutLeaveMainLoop();                  
+  } else if (key == 0x60) {                 // ~
+      g_Chip8.ToggleFlag(CPU_FLAG_PAUSED);
+  } else if (key == 0x31) {                 // 1
+      g_Chip8.DumpRegisters();
+  } else if (key == 0x35) {                 // 5
+      g_Chip8.Step();
+  }
 
-    const int keyList[] = {
-		0x31, // '1'
-		0x32, // '2'
-		0x33, // '3'
-		0x34, // '4'
-		0x51, // 'Q'
-		0x57, // 'W'
-		0x45, // 'E'
-		0x52, // 'R'
-		0x41, // 'A'
-		0x53, // 'S'
-		0x44, // 'D'
-		0x46, // 'F'
-		0x5A, // 'Z'
-		0x58, // 'X'
-		0x43, // 'C'
-		0x56  // 'V'
-	};
+  const int keyList[] = {
+    0x31, // '1'
+    0x32, // '2'
+    0x33, // '3'
+    0x34, // '4'
+    0x51, // 'Q'
+    0x57, // 'W'
+    0x45, // 'E'
+    0x52, // 'R'
+    0x41, // 'A'
+    0x53, // 'S'
+    0x44, // 'D'
+    0x46, // 'F'
+    0x5A, // 'Z'
+    0x58, // 'X'
+    0x43, // 'C'
+    0x56  // 'V
+  };
 
-    char keyState[16];
-    memset(keyState, 0, 16);
-    // Read keypad input
-	for (int i = 0; i < 16; i++) {
-        if (toupper(key) == keyList[i]) {
-            g_Chip8.SetFlag(CPU_FLAG_KEYDOWN);
-            keyState[i] = 1;
-            break;
-        }
-    }
+  char keyState[NUM_KEYS] = {0};
+  // Read keypad input
+  for (int i = 0; i < NUM_KEYS; i++) {
+      if (toupper(key) == keyList[i]) {
+          g_Chip8.SetFlag(CPU_FLAG_KEYDOWN);
+          keyState[i] = 1;
+          break;
+      }
+  }
 
-    // int i = 0;
-    // while (keyState[i++] = (toupper(key) == keyList[i])) {
-    //     g_Chip8.SetFlag(CPU_FLAG_KEYDOWN);
-    // }
-
-    g_Chip8.SetKeys(keyState);
+  g_Chip8.SetKeys(keyState);
 }
 
 void keyboardUp(unsigned char key, int x, int y)
 {
-    const int keyList[] = {
-		0x31, // '1'
-		0x32, // '2'
-		0x33, // '3'
-		0x34, // '4'
-		0x51, // 'Q'
-		0x57, // 'W'
-		0x45, // 'E'
-		0x52, // 'R'
-		0x41, // 'A'
-		0x53, // 'S'
-		0x44, // 'D'
-		0x46, // 'F'
-		0x5A, // 'Z'
-		0x58, // 'X'
-		0x43, // 'C'
-		0x56, // 'V'
-	};
+  const int NUM_KEYS = 16;
 
-    char keyState[16];
-    memset (keyState, 0, 16);
-    // Read keypad input
-    for (int i = 0; i < 16; i++) {
-        if (key == keyList[i]) {
-            g_Chip8.ResetFlag(CPU_FLAG_KEYDOWN);
-            keyState[i] = 0;
-            break;
-        }
-    }
+  const int keyList[] = {
+    0x31, // '1'
+    0x32, // '2'
+    0x33, // '3'
+    0x34, // '4'
+    0x51, // 'Q'
+    0x57, // 'W'
+    0x45, // 'E'
+    0x52, // 'R'
+    0x41, // 'A'
+    0x53, // 'S'
+    0x44, // 'D'
+    0x46, // 'F'
+    0x5A, // 'Z'
+    0x58, // 'X'
+    0x43, // 'C'
+    0x56, // 'V'
+  };
 
-	// for (int i = 0; i < 16; i++) {
- //        if (g_Chip8.GetFlag(CPU_FLAG_KEYDOWN)) {
- //            g_Chip8.ResetFlag(CPU_FLAG_KEYDOWN);
- //            keyState[i] = key == keyList[i];
- //        }
-        
- //    }
+  char keyState[NUM_KEYS] = {0};
+  // Read keypad input
+  for (int i = 0; i < NUM_KEYS; i++) {
+      if (key == keyList[i]) {
+          g_Chip8.ResetFlag(CPU_FLAG_KEYDOWN);
+          keyState[i] = 0;
+          break;
+      }
+  }
 
-    g_Chip8.SetKeys(keyState);
+  g_Chip8.SetKeys(keyState);
 }
