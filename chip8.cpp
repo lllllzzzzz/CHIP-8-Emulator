@@ -6,15 +6,15 @@
 #include <time.h>
 #include "chip8.hpp"
 
-#define fetch(addr)     ((_RAM[addr] << 8) | (_RAM[addr + 1]))
-#define X               ((_regs.opcode & 0x0F00) >> 8)
-#define Y               ((_regs.opcode & 0x00F0) >> 4)
-#define N               (_regs.opcode & 0x000F)
-#define NN              (_regs.opcode & 0x00FF)
-#define NNN             (_regs.opcode & 0x0FFF)
-#define Vx              (_regs.V[(_regs.opcode & 0x0F00) >> 8])
-#define Vy              (_regs.V[(_regs.opcode & 0x00F0) >> 4])
-#define Vf              (_regs.V[0xF])
+#define fetch(addr) ((_RAM[addr] << 8) | (_RAM[addr + 1]))
+#define X           ((_regs.opcode & 0x0F00) >> 8)
+#define Y           ((_regs.opcode & 0x00F0) >> 4)
+#define N           (_regs.opcode & 0x000F)
+#define NN          (_regs.opcode & 0x00FF)
+#define NNN         (_regs.opcode & 0x0FFF)
+#define Vx          (_regs.V[(_regs.opcode & 0x0F00) >> 8])
+#define Vy          (_regs.V[(_regs.opcode & 0x00F0) >> 4])
+#define Vf          (_regs.V[0xF])
 
 unsigned char fontset[80] =
 {
@@ -190,12 +190,12 @@ bool Chip8::Initialize()
   |-------------------------------------------------------|*/
 bool Chip8::Reset()
 {
-    _regs.pc            = 0x0200;
-    _regs.sp            = 0x0;
-    _regs.opcode        = 0x0000;
-    _regs.I             = 0x0000;
-    _regs.delayTimer    = 0;
-    _regs.soundTimer    = 0;
+    _regs.pc         = 0x0200;
+    _regs.sp         = 0x0;
+    _regs.opcode     = 0x0000;
+    _regs.I          = 0x0000;
+    _regs.delayTimer = 0;
+    _regs.soundTimer = 0;
 
     memset(_VRAM, 0, 2048);
     memset(_regs.V, 0, 16);
@@ -237,7 +237,7 @@ bool Chip8::LoadRom(const char *filename)
         return false;
     }
 
-    int bytesRead = fread(_RAM + ROM_LOAD_OFFSET, sizeof(char), romSize, pFile);
+    int bytesRead = fread(_RAM + ROM_LOAD_OFFSET, 1, romSize, pFile);
     fclose(pFile);
     if (bytesRead != romSize) {
         return false;
